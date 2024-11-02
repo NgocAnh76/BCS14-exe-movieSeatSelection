@@ -1,54 +1,70 @@
 import React, { useState } from "react";
-import TableSelectSeat from "./TableSelectSeat";
-import TypeSeat from "./TypeSeat";
-import DisplayTable from "./DisplayTable";
 
 const Home = () => {
   let [formData, setFormData] = useState({
     name: "",
-    numberSeat: "",
+    numberSeat: 0,
   });
-  let [selecting, setSelecting] = useState(false);
-  let [selectedSeats, setSelectedSeats] = useState([]);
-  let [showSeats, setShowSeat] = useState(false);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [reservedSeats, setReservedSeats] = useState([]);
+  const [displayInfo, setDisplayInfo] = useState(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+  const seatPerRow = 12;
+  const seatPrice = 150000;
 
-  let handleInput = (e) => {
+  const handleInput = (e) => {
     let { value, name } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-  let handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!formData.name || !formData.numberSeat) {
       alert("Please Enter your Name and Number of Seats");
+      return;
+    } else {
+      alert("Please choose your seat");
     }
-    setSelecting(true);
-    setShowSeat(true);
 
-    setSelectedSeats((prevSeats) => {
-      if (prevSeats.includes(e)) {
-        return prevSeats.filter((s) => s !== e); // Bỏ chọn nếu ghế đã được chọn
-      } else {
-        // Kiểm tra nếu số lượng ghế đã đạt giới hạn
-        if (prevSeats.length < parseInt(formData.numberSeat)) {
-          return [...prevSeats, e];
-        }
-        alert("Số lượng ghế đã đạt tối đa");
-        return prevSeats;
-      }
-    });
+    setSelectedSeats([]);
+    setIsSelecting(true);
   };
-  const handleConfirmSelection = () => {
-    setShowMessage(false);
-    setSelecting(false);
-    alert(
-      `Tên: ${formData.name}, Số ghế: ${selectedSeats.join(", ")}, Giá: ${
-        selectedSeats.length * seatPrice
-      } VND`
-    );
+  const handleSeatSelection = (seat) => {
+    if (selectedSeats.includes(seat)) {
+      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
+    } else if (selectedSeats.length < formData.numberSeat) {
+      setSelectedSeats([...selectedSeats, seat]);
+    } else {
+      alert("You have selected enough quantity.");
+    }
+  };
+  // Kiểm tra ghế có bị khóa không (đã đặt trước đó)
+  const isSeatDisabled = (seat) => reservedSeats.includes(seat) || !isSelecting;
+
+  // Xác nhận ghế đã chọn
+  const confirmSelection = () => {
+    if (selectedSeats.length == formData.numberSeat) {
+      setReservedSeats([...reservedSeats, ...selectedSeats]); // Thêm ghế vào danh sách đã đặt
+      setDisplayInfo({
+        name: formData.name,
+        numberSeat: formData.numberSeat,
+        seats: selectedSeats.join(", "),
+        price: (selectedSeats.length * seatPrice).toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }),
+      });
+
+      // console.log(formattedPrice);
+      setSelectedSeats([]);
+      setIsSelecting(false);
+    } else {
+      alert("Vui lòng chọn đúng số ghế đã nhập.");
+    }
   };
 
   return (
@@ -106,1018 +122,38 @@ const Home = () => {
             <tbody>
               <tr>
                 <td></td>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
-                <td>7</td>
-                <td>8</td>
-                <td>9</td>
-                <td>10</td>
-                <td>11</td>
-                <td>12</td>
+                {[...Array(12)].map((_, index) => (
+                  <td key={`${index + 1}`}>{index + 1}</td>
+                ))}
               </tr>
-              <tr>
-                <td>A</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"A12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>B</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>C</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"C12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>D</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"B12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>E</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"E12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>F</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"F12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>G</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"G12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>H</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"H12"}
-                    disabled
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>I</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I1"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I2"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I3"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I4"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I5"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I6"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I7"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I8"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I9"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I10"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I11"}
-                    disabled
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    name=""
-                    className="seats"
-                    value={"I12"}
-                    disabled
-                  />
-                </td>
-              </tr>
+              {rows.map((row) => (
+                <tr key={row}>
+                  <td>{row}</td>
+                  {[...Array(seatPerRow)].map((_, index) => (
+                    <td key={`${row}${index + 1}`}>
+                      <input
+                        type="checkbox"
+                        className="seats"
+                        value={`${row}${index + 1}`}
+                        checked={selectedSeats.includes(`${row}${index + 1}`)}
+                        onChange={() =>
+                          handleSeatSelection(`${row}${index + 1}`)
+                        }
+                        disabled={isSeatDisabled(`${row}${index + 1}`)}
+                        style={{
+                          backgroundColor: selectedSeats.includes(
+                            `${row}${index + 1}`
+                          )
+                            ? "green"
+                            : reservedSeats.includes(`${row}${index + 1}`)
+                            ? "red"
+                            : "white",
+                        }}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
           <div
@@ -1126,7 +162,8 @@ const Home = () => {
           >
             <h2 className="screen_title">Screen this way</h2>
           </div>
-          <button onChange={handleStartSelecting} className="home_button">
+
+          <button onClick={confirmSelection} className="home_button">
             Confirm Selection
           </button>
         </div>
@@ -1140,20 +177,40 @@ const Home = () => {
                 <th>Seats</th>
                 <th>Price</th>
               </tr>
-              <tr>
-                <td>
-                  <textarea name="" id="nameDisplay" disabled></textarea>
-                </td>
-                <td>
-                  <textarea name="" id="numberDisplay" disabled></textarea>
-                </td>
-                <td>
-                  <textarea name="" id="seatsDisplay" disabled></textarea>
-                </td>
-                <td>
-                  <textarea name="" id="seatsPrice" disabled></textarea>
-                </td>
-              </tr>
+              {displayInfo ? (
+                <tr>
+                  <td>
+                    <textarea
+                      id="nameDisplay"
+                      value={displayInfo.name || ""}
+                      disabled
+                    ></textarea>
+                  </td>
+                  <td>
+                    <textarea
+                      id="numberDisplay"
+                      value={displayInfo.numberSeat || ""}
+                      disabled
+                    ></textarea>
+                  </td>
+                  <td>
+                    <textarea
+                      id="seatsDisplay"
+                      value={displayInfo.seats || ""}
+                      disabled
+                    ></textarea>
+                  </td>
+                  <td>
+                    <textarea
+                      id="seatsPrice"
+                      value={displayInfo.price || ""}
+                      disabled
+                    ></textarea>
+                  </td>
+                </tr>
+              ) : (
+                ""
+              )}
             </tbody>
           </table>
         </div>
